@@ -1,15 +1,14 @@
-import json
+import pickle
 
 
-with open('../config/food_services.json', 'r', encoding='UTF-8') as file:
-    data = json.load(file)
-    types = set()
-    for i in data:
-        types.add(i['TypeObject'])
-    result = {i: ['', 0] for i in types}
-    for i in data:
-        for k, v in result.items():
-            if i['TypeObject'] == k and i['SeatsCount'] > v[1]:
-                v[0], v[1] = i['Name'], i['SeatsCount']
-    for i in sorted(result):
-        print(f'{i}:{result[i][0]}, {result[i][1]}')
+def filter_dump(file_name, no_serialize_lst, types):
+    with open(file_name, mode='wb') as file:
+        new_lst = []
+        for i in no_serialize_lst:
+            if type(i) is types:
+                new_lst.append(i)
+        pickle.dump(new_lst, file)
+        return new_lst
+
+
+print(filter_dump('numbers.pkl', [1, '2', 3, 4, '5'], int))
