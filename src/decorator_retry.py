@@ -12,7 +12,7 @@ def retry(times):
                     break
                 except:
                     times -= 1
-                    if times == 0:
+                    if not times:
                         raise MaxRetriesException
                     continue
         return wrapper
