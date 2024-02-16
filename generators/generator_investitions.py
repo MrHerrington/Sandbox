@@ -1,7 +1,7 @@
 import csv
 
 
-with open('../config/investitions.csv', 'r', encoding='UTF-8') as file:
+with open('../testing_data/investitions.csv', 'r', encoding='UTF-8') as file:
     datas = csv.reader(file, delimiter=',', lineterminator='\n')
     header = next(datas)
     positions = (i for i in datas if i[-1] == 'a')

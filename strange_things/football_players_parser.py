@@ -22,7 +22,7 @@ def is_correct_json(file_name):
         return {}
 
 
-with ZipFile('../config/data.zip') as zip_file:
+with ZipFile('../testing_data/data.zip') as zip_file:
     players_lst = []
     for i in zip_file.namelist():
         if os.path.basename(i).split('.')[-1] == 'json':

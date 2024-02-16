@@ -6,7 +6,7 @@ import json
 import datetime
 
 
-with open('../config/pools.json', 'r', encoding='UTF-8') as file:
+with open('../testing_data/pools.json', 'r', encoding='UTF-8') as file:
     data = json.load(file)
     address = ''
     length = 0

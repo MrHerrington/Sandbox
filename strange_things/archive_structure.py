@@ -19,7 +19,7 @@ def size_conv(size):    # Функция конвертации размера �
         return round(size / 1073741824), 'GB'
 
 
-with ZipFile('../config/test.zip', 'r') as zip_file:
+with ZipFile('../testing_data/test.zip', 'r') as zip_file:
     dct = {}    # Словарь вида {полный путь файла - путь в виде списка}
     for i in zip_file.namelist():
         tmp = zip_file.getinfo(i).filename.split('/')

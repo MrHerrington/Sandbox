@@ -15,8 +15,8 @@ def check(oper, elem, massive):
     return lambda x: oper(x[elem]) == max(map(lambda y: oper(y[elem]), massive))
 
 
-with open('../config/exam_results.csv', 'r', encoding='UTF-8') as file1, \
-        open('../config/best_scores.json', 'w', encoding='UTF-8') as file2:
+with open('../testing_data/exam_results.csv', 'r', encoding='UTF-8') as file1, \
+        open('../testing_data/best_scores.json', 'w', encoding='UTF-8') as file2:
     data = [str(i).split(',') for i in file1.read().splitlines()]  # Извлечение данных
     data.pop(0)
     filtration = set()  # Множество исключений
