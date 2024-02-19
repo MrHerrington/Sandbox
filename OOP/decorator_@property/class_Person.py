@@ -5,24 +5,30 @@ class Person:
         self._name = name
         self._surname = surname
         self._cache = dict()
+        self._cache[(self._name, self._surname)] = self._name + ' ' + self._surname
 
-    def get_name(self):
+    @property
+    def name(self):
         """Метод возвращает имя человека"""
         return self._name
 
-    def set_name(self, new_name):
+    @name.setter
+    def name(self, new_name):
         """Метод изменяет имя человека"""
         self._name = new_name
 
-    def get_surname(self):
+    @property
+    def surname(self):
         """Метод возвращает фамилию человека"""
         return self._surname
 
-    def set_surname(self, new_surname):
+    @surname.setter
+    def surname(self, new_surname):
         """Метод изменяет фамилию человека"""
         self._surname = new_surname
 
-    def get_fullname(self):
+    @property
+    def fullname(self):
         """Возвращает полное имя человека из кэша (если содержится в кэше),
         или при выполнении метода с занесением в кэш"""
         if (self._name, self._surname) not in self._cache:
@@ -32,13 +38,13 @@ class Person:
         else:
             return self._cache[(self._name, self._surname)]
 
-    name = property(get_name, set_name)
-    surname = property(get_surname, set_surname)
-    fullname = property(get_fullname)
+    @fullname.setter
+    def fullname(self, new_fullname):
+        self._name, self._surname = new_fullname.split()
 
 
-person = Person('Меган', 'Фокс')
+person = Person('Mike', 'Pondsmith')
 
-print(person.fullname)
-person.name = 'Стефани'
-print(person.fullname)
+person.fullname = 'Troy Baker'
+print(person.name)
+print(person.surname)
