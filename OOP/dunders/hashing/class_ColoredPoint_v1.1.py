@@ -1,9 +1,21 @@
 class ColoredPoint:
+    version = '1.1'
+
     """Класс описывает цветную точку на плоскости"""
+
     def __init__(self, x, y, color=(0, 0, 0)):
         self._x = x
         self._y = y
         self._color = color
+
+    def __eq__(self, other):
+        return self._fields == other._fields
+
+    def __hash__(self):
+        return hash(self._fields)
+
+    def __repr__(self):
+        return f'ColoredPoint({self.x}, {self.y}, {self.color})'
 
     def __pos__(self):
         return ColoredPoint(self.x, self.y)
@@ -30,17 +42,29 @@ class ColoredPoint:
     def color(self):
         return self._color
 
+    @property
+    def _fields(self):
+        return self.x, self.y, self.color
+
 
 # Test №1
-point = ColoredPoint(2, -3)
+point1 = ColoredPoint(1, 2, 'white')
+point2 = ColoredPoint(1, 2, 'white')
+point3 = ColoredPoint(3, 4, 'black')
 
-print(+point)
-print(-point)
-print(~point)
+print(point1 == point2)
+print(hash(point1) == hash(point2))
+print(point1 == point3)
+print(hash(point1) == hash(point3))
 
 # Test №2
-point1 = ColoredPoint(2, -3)
-point2 = ColoredPoint(10, 20, (34, 45, 67))
+points = {ColoredPoint(1, 2, 'white'): 10, ColoredPoint(1, 2,'black'): 20}
+print(points)
 
-print(point1.color)
-print(point2.color)
+# Test №3
+point = ColoredPoint(1, 2, 'white')
+
+try:
+    point.color = 'black'
+except AttributeError as e:
+    print('Error')
