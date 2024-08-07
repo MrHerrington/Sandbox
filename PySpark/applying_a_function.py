@@ -1,6 +1,6 @@
 from datetime import datetime, date
 import pandas as pd
-from pyspark.sql import SparkSession, Row, Column
+from pyspark.sql import SparkSession, Row
 from pyspark.sql.functions import pandas_udf
 
 
@@ -14,6 +14,8 @@ df = spark.createDataFrame([
 
 ########################################################################################################################
 
+# Case №1
+
 
 @pandas_udf('long')
 def pandas_plus_one(series: pd.Series) -> pd.Series:
@@ -22,6 +24,9 @@ def pandas_plus_one(series: pd.Series) -> pd.Series:
 
 
 df.select(pandas_plus_one(df.a)).show()
+
+
+# Case №2
 
 
 def pandas_filter_func(iterator):

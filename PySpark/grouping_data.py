@@ -14,10 +14,12 @@ df = spark.createDataFrame([
     ['red', 'grape', 8, 80]
 ], schema=['color', 'fruit', 'v1', 'v2'])
 
-print('Case №1')
+########################################################################################################################
+
+# Case №1
 df.groupby('color').avg().show()
 
-print('Case №2')
+# Case №2
 
 
 def plus_mean(pandas_df):
@@ -26,7 +28,7 @@ def plus_mean(pandas_df):
 
 df.groupby('color').applyInPandas(plus_mean, schema=df.schema).show()
 
-print('Case №3')
+# Case №3
 
 
 def plus_mean(pandas_df):
@@ -35,7 +37,7 @@ def plus_mean(pandas_df):
 
 df.groupby('color').applyInPandas(plus_mean, schema=df.schema).show()
 
-print('Case №4')
+# Case №4
 df1 = spark.createDataFrame([
     (20000101, 1, 1.0),
     (20000101, 2, 2.0),
