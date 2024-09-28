@@ -1,8 +1,10 @@
-: "
+<< '////'
+
 Instructions
 
 The classical introductory exercise. Just say 'Hello, World!'.
-"
+
+////
 
 
 #!/usr/bin/env bash
@@ -12,4 +14,3 @@ main () {
 }
 
 main "$@"
-

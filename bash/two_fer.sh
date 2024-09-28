@@ -1,4 +1,5 @@
-: "
+<< '////'
+
 Introduction
 
 In some English accents, when you say 'two for' quickly, it sounds like 'two fer'. Two-for-one is a way of saying
@@ -13,7 +14,8 @@ If you know the person's name (e.g. if they're named Do-yun), then you will say:
 One for Do-yun, one for me.
 If you don't know the person's name, you will say you instead.
 One for you, one for me.
-"
+
+////
 
 
 #!/usr/bin/env bash
