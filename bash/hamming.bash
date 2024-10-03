@@ -1,6 +1,7 @@
 << '////'
 
 Instructions
+
 Calculate the Hamming distance between two DNA strands.
 
 Your body is made up of cells that contain DNA. Those cells regularly wear out and need replacing, which they
@@ -21,6 +22,7 @@ The Hamming distance is useful for lots of things in science, not just biology,
 so it's a nice phrase to be familiar with :)
 
 Implementation notes
+
 The Hamming distance is only defined for sequences of equal length, so an attempt to calculate it between
 sequences of different lengths should not work.
 
