@@ -32,33 +32,33 @@ sequences of different lengths should not work.
 #!/usr/bin/env bash
 
 main () {
-    # count args check
-    if [[ "$#" -ne 2 ]]; then
-        echo "Usage: hamming.sh <string1> <string2>"
-        exit 1
+  # count args check
+  if [[ "$#" -ne 2 ]]; then
+    echo "Usage: hamming.sh <string1> <string2>"
+    exit 1
+  fi
+
+  # both empty args check
+  if [[ ${#1} -eq 0 ]] && [[ ${#2} -eq 0 ]]; then
+    echo "0"
+    exit 0
+  fi
+
+  # different args length check
+  if [[ ${#1} -ne ${#2} ]] || [[ ${#1} -eq 0 ]] || [[ ${#2} -eq 0 ]]; then
+    echo "strands must be of equal length"
+    exit 1
+  fi
+
+  RES=0
+  MAX_LEN=${#1}
+
+  for ((i = 0 ; i < MAX_LEN ; i++)); do
+    if [[ ${1:$i:1} != "${2:$i:1}" ]]; then
+      (( RES+=1 ))
     fi
-
-    # both empty args check
-    if [[ ${#1} -eq 0 ]] && [[ ${#2} -eq 0 ]]; then
-        echo "0"
-        exit 0
-    fi
-
-    # different args length check
-    if [[ ${#1} -ne ${#2} ]] || [[ ${#1} -eq 0 ]] || [[ ${#2} -eq 0 ]]; then
-        echo "strands must be of equal length"
-        exit 1
-    fi
-
-    RES=0
-    MAX_LEN=${#1}
-
-    for ((i = 0 ; i < MAX_LEN ; i++)); do
-        if [[ ${1:$i:1} != "${2:$i:1}" ]]; then
-            (( RES+=1 ))
-        fi
-    done
-    echo $RES
+  done
+  echo $RES
 }
 
 main "$@"

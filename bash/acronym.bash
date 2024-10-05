@@ -22,11 +22,11 @@ Thank George It's Friday!	TGIF
 #!/usr/bin/env bash
 
 main () {
-    acronym=""
-    for word in ${*//[^A-Za-z\']/ }; do
-        acronym+=${word:0:1}
-    done
-    echo "${acronym^^}"
+  acronym=""
+  for word in ${*//[^A-Za-z\']/ }; do
+    acronym+=${word:0:1}
+  done
+  echo "${acronym^^}"
 }
 
 main "$@"

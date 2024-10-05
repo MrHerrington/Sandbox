@@ -31,25 +31,25 @@ Most languages provide operators or functions for one (or both) of these.
 #!/usr/bin/env bash
 
 main () {
-    RES=""
+  RES=""
 
-    if [[ $(("$@" % 3)) -eq 0 ]]; then
-        RES+="Pling"
-    fi
+  if [[ $(("$@" % 3)) -eq 0 ]]; then
+    RES+="Pling"
+  fi
 
-    if [[ $(("$@" % 5)) -eq 0 ]]; then
-        RES+="Plang"
-    fi
+  if [[ $(("$@" % 5)) -eq 0 ]]; then
+    RES+="Plang"
+  fi
 
-    if [[ $(("$@" % 7)) -eq 0 ]]; then
-        RES+="Plong"
-    fi
+  if [[ $(("$@" % 7)) -eq 0 ]]; then
+    RES+="Plong"
+  fi
 
-    if [[ -z $RES ]]; then
-        RES="$*"
-    fi
+  if [[ -z $RES ]]; then
+    RES="$*"
+  fi
 
-    echo "$RES"
+  echo "$RES"
 }
 
 main "$@"

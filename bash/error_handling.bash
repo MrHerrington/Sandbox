@@ -18,12 +18,12 @@ one argument, print a greeting message. Otherwise print an error message and exi
 #!/usr/bin/env bash
 
 main () {
-    if [[ "$#" == 1 ]]; then
-        echo "Hello, $1"
-    else
-        echo "Usage: error_handling.sh <person>"
-        exit 1
-    fi
+  if [[ "$#" == 1 ]]; then
+    echo "Hello, $1"
+  else
+    echo "Usage: error_handling.sh <person>"
+    exit 1
+  fi
 }
 
 main "$@"
