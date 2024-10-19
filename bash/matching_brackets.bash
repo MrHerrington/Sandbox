@@ -18,24 +18,55 @@ For example, "{what is (42)}?" is balanced and "[text}" is not.
 
 #!/usr/bin/env bash
 
-main () {
+greedy_check () {
   string="$*"
-  pattern="\[[^\(\)\{\}]*\]"
-  
-  match=$(echo "$string" | grep -o "$pattern")
+  pattern="[\[]+.*?[\]]+|[\{]+.*?[\}]+|[\(]+.*?[\)]+"
+
+  match=$(echo "$string" | grep -Po "$pattern" | head -1)
 
   while [[ -n "$match" ]]; do
     without_brackets=${match:1:-1}
     string=${string//"$match"/"$without_brackets"}
-    match=$(echo "$string" | grep -o "$pattern")
+    match=$(echo "$string" | grep -Po "$pattern" | head -1)
   done
 
-  echo "$string"
-
-  if [[ $string =~ .*[\]]+.* ]] || [[ $string =~ .*[\[]+.* ]]; then
-    echo "false"
+  if [[ $string =~ .*[\]]+.* ]] || [[ $string =~ .*[\[]+.* ]] \
+  || [[ $string =~ .*[\}]+.* ]] || [[ $string =~ .*[\{]+.* ]] \
+  || [[ $string =~ .*[\)]+.* ]] || [[ $string =~ .*[\(]+.* ]]; then
+    echo 0
   else
-    echo "true"
+    echo 1
+  fi
+}
+
+non_greedy_check () {
+  string="$*"
+  pattern="[\[]+.*[\]]+|[\{]+.*[\}]+|[\(]+.*[\)]+"
+
+  match=$(echo "$string" | grep -Po "$pattern" | head -1)
+
+  while [[ -n "$match" ]]; do
+    string=${string//"$match"/}
+    match=$(echo "$string" | grep -Po "$pattern" | head -1)
+  done
+
+  if [[ $string =~ .*[\]]+.* ]] || [[ $string =~ .*[\[]+.* ]] \
+  || [[ $string =~ .*[\}]+.* ]] || [[ $string =~ .*[\{]+.* ]] \
+  || [[ $string =~ .*[\)]+.* ]] || [[ $string =~ .*[\(]+.* ]]; then
+    echo 0
+  else
+    echo 1
+  fi
+}
+
+main () {
+  check1=$(greedy_check "$@")
+  check2=$(non_greedy_check "$@")
+
+  if [[ $(( check1*check2 )) -eq 1 ]]; then
+    echo 'true'
+  else
+    echo 'false'
   fi
 }
 
