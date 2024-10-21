@@ -87,84 +87,143 @@ teardown() {
 # main functionality section #
 ##############################
 
-numerate () {
-  counter=0
-
-  for line in "${text_strings[@]}"; do
-    temp_counter=$counter
-    (( counter++ ))
-    text_strings[$temp_counter]="$counter:$line"
-  done
+ere_quote() {
+  # Usage: ere_quote "string"
+  sed 's/[][\.|$(){}?+*^]/\\&/g' <<< "$*"
 }
 
-show_arr () {
-  temp_arr=()
+create_source () {
+  for file in "${files[@]}"; do
+    while read line; do
+      string_num=$(awk -v text="$line" 'index($0, text) { print NR; exit }' "$file")
+      full_string="$file$sep$string_num$sep$line"
+      full_source+=( "$full_string" )
+    done < "$file"
+  done
 
-  for line in "${text_strings[@]}"; do
-    if [[ "$options_list" =~ "-n" ]]; then
-      if [[ "$line" =~ $with_nums_pattern ]]; then
-        temp_arr+=( "$line" )
-      fi
-    else
-      if [[ "$line" =~ $pattern ]]; then
-        temp_arr+=( "$line" )
-      fi
+}
+
+split_on_sep () {
+  # Usage: split_on_sep "array_name" "sep" "string"
+  local -n __temp_arr=$1
+
+  while read -r __line; do
+    if [[ -n "$__line" ]]; then
+      __temp_arr+=( "$__line" )
     fi
-  done
-
-  for line in "${temp_arr[@]}"; do
-    echo "$line"
-  done
+  done < <(awk -v sep="$2" 'BEGIN{ RS=sep }{ print $0 }' <<< "$3")
 }
 
 main () {
-  options_list="$*"
-  pattern_pos=$(( "$#" - 1 ))
-  pattern=${!pattern_pos}
-  file_name_pos=$(( "$#" ))
-  file_name=${!file_name_pos}
-  
-  declare -a text_strings
-  
-  while read line; do
-      text_strings+=( "$line" )
-  done < "$file_name"
+  declare -a flags files full_source source
+  local subpattern
+  local good_list
 
-  if [[ "$#" < 3 ]]; then
-    for line in "${text_strings[@]}"; do
-      if [[ "$line" =~ "$pattern" ]]; then
-        echo "$line"
+  args=( "$@" )
+  sep="->sep<-"
+  in_str_sep=":"
+
+  for arg in "${args[@]}"; do
+    if [[ "$arg" =~ ^-.$ ]]; then
+      flags+=( "$arg" )
+    elif [[ -f "$arg" ]]; then
+      files+=( "$arg" )
+    else
+      subpattern="$arg"
+    fi
+  done
+
+  purged_subpattern=$(ere_quote "$subpattern")
+  pattern="(.+.txt:)?(\d*:)?$purged_subpattern"
+
+  create_source
+
+  for str in "${full_source[@]}"; do
+    temp_arr=()
+    
+    split_on_sep "temp_arr" "$sep" "$str"
+    
+    if [[ "${#files[@]}" -gt 1 ]]; then
+      source+=( "${temp_arr[0]}:${temp_arr[2]}" )
+    else
+      source+=( "${temp_arr[2]}" )
+    fi
+
+  done
+  
+  if [[ ! ${flags[*]} =~ -n ]]; then
+    
+    for str in "${source[@]}"; do
+      purge_str=()
+      split_on_sep "purge_str" "$in_str_sep" "$str"
+
+      if [[ "${purge_str[-1]}" =~ $pattern ]]; then
+        good_list+=( "$str" )
       fi
     done
-
-    exit 0
+  
   fi
-
+  
   OPTIONS=":nlivx"
 
   while getopts ${OPTIONS} option; do
     case ${option} in
       n)
-        numerate
-        with_nums_pattern="[[:digit:]]*?:.*$pattern"
-        ;;
-      l)
-        local temp_arr
+        source=()
+        good_list=()
 
-        for line in "${text_strings[@]}"; do
-          if [[ "$line" =~ "$2" ]] && [[ ! "${temp_arr[*]}" =~ "$3" ]]; then
-            temp_arr+=( "$3" )
+        for str in "${full_source[@]}"; do
+          temp_arr=()
+          
+          split_on_sep "temp_arr" "$sep" "$str"
+          
+          if [[ "${#files[@]}" -gt 1 ]]; then
+            source+=( "${temp_arr[0]}:${temp_arr[1]}:${temp_arr[2]}" )
+          else
+            source+=( "${temp_arr[1]}:${temp_arr[2]}" )
           fi
         done
 
-        text_strings=("${temp_arr[@]}")
-        ;;
-      i)
-        pattern="${pattern^^}"
+        for str in "${source[@]}"; do
+          purge_str=()
+          split_on_sep "purge_str" "$in_str_sep" "$str"
+          
+          if [[ "${purge_str[-1]}" =~ $pattern ]]; then
+            good_list+=( "$str" )
+          fi
+        done
         ;;
       x)
-        pattern="^$pattern$"
-        with_nums_pattern="^$with_nums_pattern$"
+        good_list=()
+        pattern="$pattern$"
+
+        for str in "${source[@]}"; do
+          purge_str=()
+          split_on_sep "purge_str" "$in_str_sep" "$str"
+
+          if [[ "${purge_str[-1]}" =~ $pattern ]] || { [[ ${flags[*]} =~ -i ]] && [[ "${purge_str[-1]^^}" =~ ${pattern^^} ]]; }; then
+            good_list+=( "$str" )
+          fi
+        done
+        ;;
+      i)
+        good_list=()
+        pattern="${pattern^^}"
+
+        for str in "${source[@]}"; do
+          purge_str=()
+          split_on_sep "purge_str" "$in_str_sep" "$str"
+          
+          if [[ "${purge_str[-1]^^}" =~ $pattern ]]; then
+            good_list+=( "$str" )
+          fi
+        done
+        ;;
+      l)
+        :
+        ;;
+      v)
+        :
         ;;
       :)
         echo "Option -${OPTARG} requires an argument."
@@ -177,7 +236,38 @@ main () {
     esac
   done
 
-  show_arr
+  if [[ ${flags[*]} =~ -l ]]; then
+    local good_files
+
+    for file in "${files[@]}"; do
+      if [[ ${good_list[*]} =~ $file ]] && [[ ! ${good_files[*]} =~ $file ]]; then
+        good_files+=( "$file" )
+      fi
+    done
+
+    if [[ "${#files[@]}" -gt 1 ]]; then
+      for file in "${good_files[@]}"; do echo "$file"; done
+    elif [[ -n "${good_list[*]}" ]] && [[ "${#files[@]}" -eq 1 ]]; then
+      echo "${files[0]}"
+    fi
+  
+  else
+
+    if [[ ! ${flags[*]} =~ -v ]]; then
+      for str in "${good_list[@]}"; do
+        echo "$str"
+      done
+    
+    else
+      
+      for str in "${source[@]}"; do
+        if [[ ! ${good_list[*]} =~ "$str" ]]; then
+          echo "$str"
+        fi
+      done
+
+    fi
+  fi
 }
 
 setup
